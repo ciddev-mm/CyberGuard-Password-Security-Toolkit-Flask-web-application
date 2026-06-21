@@ -33,11 +33,11 @@
                     </div>
                     <div class="progress strength-progress mt-1">
                         {% if label in ['Very Weak', 'Weak'] %}
-                            <div class="progress-bar bg-danger" style="width: {{ percent }}%;"></div>
+                            <div class="progress-bar bg-danger" data-width="{{ percent }}%"></div>
                         {% elif label == 'Medium' %}
-                            <div class="progress-bar bg-warning" style="width: {{ percent }}%;"></div>
+                            <div class="progress-bar bg-warning" data-width="{{ percent }}%"></div>
                         {% else %}
-                            <div class="progress-bar bg-success" style="width: {{ percent }}%;"></div>
+                            <div class="progress-bar bg-success" data-width="{{ percent }}%"></div>
                         {% endif %}
                     </div>
                 </div>

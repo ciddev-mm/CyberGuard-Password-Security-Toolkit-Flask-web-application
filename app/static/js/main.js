@@ -3,6 +3,11 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Auto-set progress bar widths from data-width attribute to avoid CSS validation errors in editor templates
+    document.querySelectorAll('.progress-bar[data-width]').forEach(bar => {
+        bar.style.width = bar.getAttribute('data-width');
+    });
+
     // 1. Password Strength Checker (Live UI updates)
     const livePassInput = document.getElementById('live-password-input');
     if (livePassInput) {

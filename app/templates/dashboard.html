@@ -48,11 +48,11 @@
             <h3 class="text-white">{{ health_score }}%</h3>
             <div class="progress strength-progress mt-2 mb-1" style="max-width: 150px; margin: 0 auto;">
                 {% if health_score >= 80 %}
-                    <div class="progress-bar bg-success" style="width: {{ health_score }}%"></div>
+                    <div class="progress-bar bg-success" data-width="{{ health_score }}%"></div>
                 {% elif health_score >= 50 %}
-                    <div class="progress-bar bg-warning" style="width: {{ health_score }}%"></div>
+                    <div class="progress-bar bg-warning" data-width="{{ health_score }}%"></div>
                 {% else %}
-                    <div class="progress-bar bg-danger" style="width: {{ health_score }}%"></div>
+                    <div class="progress-bar bg-danger" data-width="{{ health_score }}%"></div>
                 {% endif %}
             </div>
             <p class="text-muted mb-0">Overall Vault Health</p>
