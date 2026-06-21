@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard – CyberGuard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card glass-card p-4">
+            <h1 class="text-white">Welcome back, <span class="text-cyber-neon">{{ user.username }}</span>!</h1>
+            <p class="text-muted mb-0">Your localized offline password security control deck. Last check: {{ datetime.now().strftime("%Y-%m-%d") }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Metrics Cards Row -->
+<div class="row g-4 mb-4">
+    <!-- Stat 1: Saved Passwords -->
+    <div class="col-md-4">
+        <div class="card glass-card dashboard-stat-card">
+            <div class="stat-icon"><i class="fas fa-vault"></i></div>
+            <h3 class="text-white">{{ total_saved }}</h3>
+            <p class="text-muted mb-0">Saved Vault Accounts</p>
+        </div>
+    </div>
+    
+    <!-- Stat 2: Avg Strength -->
+    <div class="col-md-4">
+        <div class="card glass-card dashboard-stat-card">
+            <div class="stat-icon">
+                {% if avg_strength >= 4 %}
+                    <i class="fas fa-shield-halved text-cyber-green"></i>
+                {% elif avg_strength >= 2.5 %}
+                    <i class="fas fa-shield-halved text-warning"></i>
+                {% else %}
+                    <i class="fas fa-shield-halved text-cyber-red"></i>
+                {% endif %}
+            </div>
+            <h3 class="text-white">{{ avg_strength }} / 5.0</h3>
+            <p class="text-muted mb-0">Average Password Strength</p>
+        </div>
+    </div>
+    
+    <!-- Stat 3: Security Score -->
+    <div class="col-md-4">
+        <div class="card glass-card dashboard-stat-card">
+            <div class="stat-icon"><i class="fas fa-heart-pulse text-info"></i></div>
+            {% set health_score = ((avg_strength / 5.0) * 100)|int %}
+            <h3 class="text-white">{{ health_score }}%</h3>
+            <div class="progress strength-progress mt-2 mb-1" style="max-width: 150px; margin: 0 auto;">
+                {% if health_score >= 80 %}
+                    <div class="progress-bar bg-success" style="width: {{ health_score }}%"></div>
+                {% elif health_score >= 50 %}
+                    <div class="progress-bar bg-warning" style="width: {{ health_score }}%"></div>
+                {% else %}
+                    <div class="progress-bar bg-danger" style="width: {{ health_score }}%"></div>
+                {% endif %}
+            </div>
+            <p class="text-muted mb-0">Overall Vault Health</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Quick Actions & Tip of the Day -->
+    <div class="col-lg-5">
+        <div class="card glass-card p-4 h-100">
+            <h3 class="text-white mb-3"><i class="fas fa-bolt text-cyber-neon me-2"></i>Quick Actions</h3>
+            <div class="d-grid gap-3">
+                <a href="{{ url_for('analyzer') }}" class="btn btn-cyber-secondary text-start py-3">
+                    <i class="fas fa-gauge-high text-cyber-neon me-3"></i> Analyze Password Strength
+                </a>
+                <a href="{{ url_for('generator') }}" class="btn btn-cyber-secondary text-start py-3">
+                    <i class="fas fa-key text-cyber-neon me-3"></i> Generate Strong Passwords
+                </a>
+                <a href="{{ url_for('breach_checker') }}" class="btn btn-cyber-secondary text-start py-3">
+                    <i class="fas fa-user-shield text-cyber-neon me-3"></i> Offline Leak Breach Checker
+                </a>
+                <a href="{{ url_for('vault') }}" class="btn btn-cyber-primary py-3">
+                    <i class="fas fa-vault me-2"></i> Manage Credentials Vault
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tip of the Day Card -->
+    <div class="col-lg-7">
+        <div class="card glass-card p-4 h-100 bg-gradient">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="text-white mb-0"><i class="fas fa-lightbulb text-warning me-2"></i>Security Tip of the Day</h3>
+                <span class="badge bg-primary">Daily Byte</span>
+            </div>
+            <div class="p-3 bg-dark rounded border border-secondary mb-3">
+                <p class="fs-5 text-cyber-neon mb-1"><i class="fas fa-quote-left me-2 text-muted"></i>{{ tip_of_the_day }}</p>
+            </div>
+            <p class="text-muted">Cyber security begins with small everyday habits. Understanding how passwords can be cracked allows you to block threat actors and safeguard personal assets.</p>
+            <div class="mt-auto">
+                <a href="{{ url_for('security_tips_page') }}" class="text-cyber-neon text-decoration-none fw-semibold">
+                    Explore all security guidelines <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Security Logs Row -->
+<div class="row">
+    <div class="col-12">
+        <div class="card glass-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="text-white mb-0"><i class="fas fa-list-check text-cyber-neon me-2"></i>Recent Activity logs</h3>
+                <a href="{{ url_for('activity_log') }}" class="btn btn-sm btn-cyber-secondary">
+                    View Full Audit History
+                </a>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-cyber align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>IP Address</th>
+                            <th>Action Taken</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_logs %}
+                            {% for log in recent_logs %}
+                                <tr>
+                                    <td class="text-muted">{{ log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                                    <td><code class="text-cyber-neon">{{ log.ip_address }}</code></td>
+                                    <td>
+                                        {% if log.action in ['Login', 'Vault Add'] %}
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">{{ log.action }}</span>
+                                        {% elif log.action in ['Login Failed', 'Vault Delete'] %}
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">{{ log.action }}</span>
+                                        {% else %}
+                                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">{{ log.action }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.description }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No recent activity logs recorded. Perform actions to generate logs.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

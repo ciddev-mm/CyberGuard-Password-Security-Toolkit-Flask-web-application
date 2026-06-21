@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile – CyberGuard{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- User Account Summary & Metrics -->
+    <div class="col-lg-5">
+        <div class="card glass-card p-4 mb-4">
+            <div class="text-center mb-4">
+                <i class="fas fa-circle-user text-cyber-neon fa-5x mb-3"></i>
+                <h2 class="text-white mb-1">{{ user.username }}</h2>
+                <code class="text-cyber-green">{{ user.email }}</code>
+                <p class="text-muted small mt-2">Member since: {{ user.created_at.strftime('%Y-%m-%d') }}</p>
+            </div>
+            
+            <hr class="border-secondary my-3">
+            
+            <h4 class="text-white mb-3"><i class="fas fa-chart-simple text-cyber-neon me-2"></i>Vault Audit Stats</h4>
+            <div class="d-flex justify-content-between mb-3 text-muted">
+                <span>Total Saved Credentials:</span>
+                <span class="text-white fw-bold">{{ total_passwords }}</span>
+            </div>
+            
+            <!-- Distribution Progress Bars -->
+            <h5 class="text-white mb-2">Strength Distribution:</h5>
+            {% for label, count in strength_distribution.items() %}
+                {% set percent = ((count / total_passwords * 100) if total_passwords != 0 else 0)|int %}
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>{{ label }}</span>
+                        <span>{{ count }} ({{ percent }}%)</span>
+                    </div>
+                    <div class="progress strength-progress mt-1">
+                        {% if label in ['Very Weak', 'Weak'] %}
+                            <div class="progress-bar bg-danger" style="width: {{ percent }}%;"></div>
+                        {% elif label == 'Medium' %}
+                            <div class="progress-bar bg-warning" style="width: {{ percent }}%;"></div>
+                        {% else %}
+                            <div class="progress-bar bg-success" style="width: {{ percent }}%;"></div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Profile Edit Forms Column -->
+    <div class="col-lg-7">
+        <!-- Form 1: General Details -->
+        <div class="card glass-card p-4 mb-4">
+            <h3 class="text-white mb-3"><i class="fas fa-user-pen text-cyber-neon me-2"></i>General Details</h3>
+            <form action="{{ url_for('profile') }}" method="post">
+                <input type="hidden" name="action" value="update_profile">
+                
+                <div class="mb-3">
+                    <label for="username" class="form-label form-label-cyber">Username</label>
+                    <input type="text" class="form-control form-control-cyber" id="username" name="username" value="{{ user.username }}" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="email" class="form-label form-label-cyber">Email Address</label>
+                    <input type="email" class="form-control form-control-cyber" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-cyber-primary">
+                        <i class="fas fa-circle-check me-2"></i> Save Profile Details
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Form 2: Master Password Update -->
+        <div class="card glass-card p-4">
+            <h3 class="text-white mb-3 text-danger"><i class="fas fa-key me-2"></i>Change Master Password</h3>
+            <p class="text-muted small">Update your key signature. Make sure to choose a combination you will not lose.</p>
+            
+            <form action="{{ url_for('profile') }}" method="post">
+                <input type="hidden" name="action" value="change_password">
+                
+                <div class="mb-3">
+                    <label for="current_password" class="form-label form-label-cyber">Current Master Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control form-control-cyber" id="current_password" name="current_password" required>
+                        <button class="btn btn-cyber-secondary btn-toggle-visibility" type="button" data-target="current_password">
+                            <i class="fas fa-eye text-cyber-neon"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="new_password" class="form-label form-label-cyber">New Master Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control form-control-cyber" id="new_password" name="new_password" required>
+                        <button class="btn btn-cyber-secondary btn-toggle-visibility" type="button" data-target="new_password">
+                            <i class="fas fa-eye text-cyber-neon"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted">Requires strong complex syntax check. Make sure it isn't reuse.</small>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-cyber-danger">
+                        <i class="fas fa-triangle-exclamation me-2"></i> Confirm Password Migration
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Activity Logs – CyberGuard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card glass-card p-4">
+            <h1 class="text-white mb-1"><i class="fas fa-list-check text-cyber-neon me-2"></i>Security Audit Log</h1>
+            <p class="text-muted mb-0">Audit history and timestamp signatures of your password and account sessions. Checks for unauthorized intrusion.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card glass-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Total Recorded Events: <span class="text-cyber-neon fw-bold">{{ logs|length }}</span></span>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-cyber align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>IP Address</th>
+                            <th>Operation</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if logs %}
+                            {% for log in logs %}
+                                <tr>
+                                    <td class="text-muted">{{ log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                                    <td><code class="text-cyber-neon">{{ log.ip_address }}</code></td>
+                                    <td>
+                                        {% if log.action in ['Login', 'Vault Add', 'Register'] %}
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">{{ log.action }}</span>
+                                        {% elif log.action in ['Login Failed', 'Vault Delete'] %}
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">{{ log.action }}</span>
+                                        {% else %}
+                                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">{{ log.action }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-white-50">{{ log.description }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-5">
+                                    <i class="fas fa-database fa-3x mb-3 opacity-25"></i>
+                                    <p class="mb-0">No audit events have been registered in the database yet.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

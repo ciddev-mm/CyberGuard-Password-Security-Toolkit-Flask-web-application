@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In – CyberGuard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="col-md-6 col-lg-5">
+        <div class="card glass-card p-4">
+            <div class="text-center mb-4">
+                <i class="fas fa-user-shield text-cyber-neon fa-3x mb-3"></i>
+                <h2 class="text-white">Secure Portal login</h2>
+                <p class="text-muted">Enter credentials to unlock your cyber toolkit</p>
+            </div>
+            
+            <form action="{{ url_for('login') }}" method="POST">
+                <div class="mb-3">
+                    <label for="username" class="form-label form-label-cyber">Username or Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-muted"><i class="fas fa-user"></i></span>
+                        <input type="text" class="form-control form-control-cyber" id="username" name="username" placeholder="cyber_student" required>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="password" class="form-label form-label-cyber">Master Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-muted"><i class="fas fa-lock"></i></span>
+                        <input type="password" class="form-control form-control-cyber" id="password" name="password" placeholder="••••••••" required>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-cyber-primary">
+                        <i class="fas fa-unlock me-2"></i> Access Dashboard
+                    </button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="text-muted mb-0">New to CyberGuard? <a href="{{ url_for('register') }}" class="text-cyber-neon text-decoration-none">Create a secure profile</a></p>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4 text-muted">
+            <small><i class="fas fa-circle-info text-info me-1"></i> Data in the database is symmetrically encrypted and safe from intrusion.</small>
+        </div>
+    </div>
+</div>
+{% endblock %}

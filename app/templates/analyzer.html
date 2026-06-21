@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Password Strength Analyzer – CyberGuard{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Input and Live Assessment Column -->
+    <div class="col-lg-6">
+        <div class="card glass-card p-4 h-100">
+            <h2 class="text-white mb-3"><i class="fas fa-gauge-high text-cyber-neon me-2"></i>Strength Analyzer</h2>
+            <p class="text-muted">Type any password to perform a real-time security audit. We evaluate length, diversity, and dictionary compliance.</p>
+            
+            <form action="{{ url_for('analyzer') }}" method="POST" class="mb-4">
+                <div class="mb-3">
+                    <label for="live-password-input" class="form-label form-label-cyber">Input Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control form-control-cyber" id="live-password-input" name="password" value="{{ input_password }}" placeholder="Enter password to test..." required>
+                        <button class="btn btn-cyber-secondary btn-toggle-visibility" type="button" data-target="live-password-input">
+                            <i class="fas fa-eye text-cyber-neon"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-cyber-primary">
+                        <i class="fas fa-magnifying-glass me-2"></i> Get Server-side Audit Report
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Live Client-side Feedback Indicator -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Live Strength Meter:</span>
+                    <span id="live-strength-label" class="badge badge-rating badge-very-weak">Empty/Very Weak</span>
+                </div>
+                <div class="progress strength-progress">
+                    <div id="live-strength-bar" class="strength-bar bg-danger" style="width: 5%"></div>
+                </div>
+            </div>
+            
+            <!-- Live Checklist -->
+            <h5 class="text-white mb-3">Security Requirements</h5>
+            <div class="list-group list-group-flush bg-transparent">
+                <div id="crit-len" class="check-item failed bg-transparent border-0 py-1">
+                    <i class="fas fa-times-circle me-2"></i> Password is at least 8 characters
+                </div>
+                <div id="crit-case" class="check-item failed bg-transparent border-0 py-1">
+                    <i class="fas fa-times-circle me-2"></i> Mix of uppercase & lowercase letters
+                </div>
+                <div id="crit-num" class="check-item failed bg-transparent border-0 py-1">
+                    <i class="fas fa-times-circle me-2"></i> Contains numbers (0-9)
+                </div>
+                <div id="crit-sym" class="check-item failed bg-transparent border-0 py-1">
+                    <i class="fas fa-times-circle me-2"></i> Contains special characters (e.g. !, @, #, $)
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Server-Side Assessment Report Column -->
+    <div class="col-lg-6">
+        <div class="card glass-card p-4 h-100">
+            <h3 class="text-white mb-3"><i class="fas fa-file-shield text-cyber-neon me-2"></i>Audit Report</h3>
+            
+            {% if result %}
+                <div class="p-3 bg-dark rounded border border-secondary mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-white fw-bold">Overall Rating:</span>
+                        {% if result.score <= 1 %}
+                            <span class="badge badge-rating badge-very-weak">{{ result.label }}</span>
+                        {% elif result.score == 2 %}
+                            <span class="badge badge-rating badge-weak">{{ result.label }}</span>
+                        {% elif result.score == 3 %}
+                            <span class="badge badge-rating badge-medium">{{ result.label }}</span>
+                        {% elif result.score == 4 %}
+                            <span class="badge badge-rating badge-strong">{{ result.label }}</span>
+                        {% else %}
+                            <span class="badge badge-rating badge-very-strong">{{ result.label }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <h1 class="display-5 text-center text-cyber-neon my-3 fw-bold">{{ result.score }} / 5</h1>
+                    <p class="text-muted text-center mb-0">Total score evaluated by cryptographic engine</p>
+                </div>
+                
+                <h5 class="text-white mb-2">Detailed Findings</h5>
+                <ul class="list-group list-group-flush mb-4">
+                    {% for item in result.feedback %}
+                        <li class="list-group-item bg-transparent text-white border-0 py-1">
+                            {% if 'WARNING' in item or 'Critically' in item or 'Missing' in item %}
+                                <i class="fas fa-circle-exclamation text-danger me-2"></i> {{ item }}
+                            {% elif 'Not found' in item or 'Good' in item or 'Contains' in item or 'Excellent' in item or 'Acceptable' in item %}
+                                <i class="fas fa-circle-check text-success me-2"></i> {{ item }}
+                            {% else %}
+                                <i class="fas fa-circle-question text-warning me-2"></i> {{ item }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                
+                {% if session.get('user_id') %}
+                    <!-- Save Button Trigger -->
+                    <div class="mt-auto d-grid">
+                        <button class="btn btn-cyber-primary" data-bs-toggle="modal" data-bs-target="#savePasswordModal">
+                            <i class="fas fa-floppy-disk me-2"></i> Save password to Encrypted Vault
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="mt-auto p-3 bg-secondary bg-opacity-10 rounded text-center">
+                        <p class="text-muted mb-0"><i class="fas fa-circle-info text-info me-2"></i> <a href="{{ url_for('login') }}" class="text-cyber-neon">Log in</a> to save this password securely in your profile history.</p>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 py-5 text-center">
+                    <i class="fas fa-shield-halved text-muted fa-4x mb-3 opacity-25"></i>
+                    <p class="text-muted">Enter a password on the left and click "Get Server-side Audit Report" to run advanced database dictionary checks and cryptographic parsing.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if result and session.get('user_id') %}
+<!-- Save password modal -->
+<div class="modal fade" id="savePasswordModal" tabindex="-1" aria-labelledby="savePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border border-secondary shadow-lg">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="savePasswordModalLabel"><i class="fas fa-vault text-cyber-neon me-2"></i>Save to Password Vault</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('vault') }}" method="POST">
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="password" value="{{ input_password }}">
+                
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label form-label-cyber">Service/Website Name</label>
+                        <input type="text" class="form-control form-control-cyber" id="title" name="title" placeholder="e.g. Google, Bank Account" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label form-label-cyber">Username / Email (Optional)</label>
+                        <input type="text" class="form-control form-control-cyber" id="username" name="username" placeholder="e.g. student@gmail.com">
+                    </div>
+                    
+                    <div class="p-3 bg-secondary bg-opacity-10 rounded border border-secondary mb-3">
+                        <small class="text-muted d-block mb-1">Encrypted Payload Preview:</small>
+                        <code class="text-cyber-green text-break">Symmetrically encrypted using AES-128 Fernet standard prior to database write.</code>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-cyber-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-cyber-primary">Confirm & Encrypt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Trigger live checker once if password is pre-filled from submission
+    const livePassInput = document.getElementById('live-password-input');
+    if (livePassInput && livePassInput.value) {
+        livePassInput.dispatchEvent(new Event('input'));
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Security Guidelines – CyberGuard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card glass-card p-4">
+            <h1 class="text-white mb-1"><i class="fas fa-lightbulb text-cyber-neon me-2"></i>Security Guidelines & Education</h1>
+            <p class="text-muted mb-0">Learn best practices in password hygiene, credentials storage, and defense mechanisms against credential stuffing attacks.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Checklist Interactive Game/Calculator Column -->
+    <div class="col-lg-5">
+        <div class="card glass-card p-4 habit-checklist-card h-100">
+            <h3 class="text-cyber-neon mb-3"><i class="fas fa-circle-question me-2"></i>Security Quotient Check</h3>
+            <p class="text-muted small">Select the statements below that match your current digital habits to calculate your Security Quotient score.</p>
+            
+            <div class="mb-4">
+                <div class="form-check mb-3">
+                    <input class="form-check-input habit-check" type="checkbox" id="habit1">
+                    <label class="form-check-label text-white" for="habit1">
+                        I enable 2FA / MFA on my email & bank accounts.
+                    </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input habit-check" type="checkbox" id="habit2">
+                    <label class="form-check-label text-white" for="habit2">
+                        I never reuse passwords across services.
+                    </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input habit-check" type="checkbox" id="habit3">
+                    <label class="form-check-label text-white" for="habit3">
+                        I use a dedicated password manager tool.
+                    </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input habit-check" type="checkbox" id="habit4">
+                    <label class="form-check-label text-white" for="habit4">
+                        I avoid logging into personal apps on public Wi-Fi.
+                    </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input habit-check" type="checkbox" id="habit5">
+                    <label class="form-check-label text-white" for="habit5">
+                        I audit my passwords every 6 to 12 months.
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Result Gauge -->
+            <div class="p-3 bg-dark rounded border border-secondary text-center mt-auto">
+                <h6 class="text-muted">YOUR HYGIENE SCORE:</h6>
+                <h2 id="habit-score-value" class="text-cyber-neon my-2">0%</h2>
+                
+                <div class="progress strength-progress mb-2">
+                    <div id="habit-progress-bar" class="progress-bar bg-danger" style="width: 0%"></div>
+                </div>
+                
+                <small id="habit-rating-text" class="text-white-50 fw-semibold">Critical Action Required</small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Educational Cards Column -->
+    <div class="col-lg-7">
+        <div class="row g-3">
+            <!-- Tip 1: Passphrase -->
+            <div class="col-12">
+                <div class="card glass-card p-3">
+                    <h5 class="text-white"><i class="fas fa-quote-left text-cyber-neon me-2"></i>Passphrases vs. Passwords</h5>
+                    <p class="text-muted small mb-0">Traditional passwords like <code>P@ssw0rd1!</code> are short and hard to remember, but easy for GPU computers to crack. A <b>passphrase</b> consisting of four or more random, unrelated words (e.g. <code>correct horse battery staple</code>) is extremely difficult for computer algorithms to crack, but very easy for a human to remember.</p>
+                </div>
+            </div>
+            
+            <!-- Tip 2: MFA -->
+            <div class="col-12">
+                <div class="card glass-card p-3">
+                    <h5 class="text-white"><i class="fas fa-mobile-screen text-cyber-neon me-2"></i>Multi-Factor Authentication (MFA)</h5>
+                    <p class="text-muted small mb-0">Multi-Factor Authentication requires you to present two or more credentials (something you know, something you have, or something you are) before gaining access. If a hacker intercepts your password, they still cannot access your accounts without your mobile authenticator code or hardware key.</p>
+                </div>
+            </div>
+            
+            <!-- Tip 3: Phishing -->
+            <div class="col-12">
+                <div class="card glass-card p-3">
+                    <h5 class="text-white"><i class="fas fa-fish text-cyber-neon me-2"></i>Phishing Awareness</h5>
+                    <p class="text-muted small mb-0">Phishing is a social engineering attack where hackers impersonate trust companies via email to steal login keys. Before typing your master password anywhere, check the URL domain carefully. Real organizations will never email you direct links to change passwords without a user-initiated request.</p>
+                </div>
+            </div>
+            
+            <!-- Tip 4: Password Managers -->
+            <div class="col-12">
+                <div class="card glass-card p-3">
+                    <h5 class="text-white"><i class="fas fa-lock text-cyber-neon me-2"></i>Use a Password Manager</h5>
+                    <p class="text-muted small mb-0">Humans are bad at remembering unique passwords for 100+ services, leading to password reuse. Password managers act as an encrypted vault that generates, stores, and fills random logins. You only need to remember one complex <b>Master Password</b> to access all other accounts safely.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

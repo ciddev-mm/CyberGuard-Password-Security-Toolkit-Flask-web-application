@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Strong Password Generator – CyberGuard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card glass-card p-4">
+            <h2 class="text-white mb-3 text-center"><i class="fas fa-key text-cyber-neon me-2"></i>Strong Password Generator</h2>
+            <p class="text-muted text-center mb-4">Generate cryptographically secure random passwords on the fly using Python's <code>secrets</code> entropy engine.</p>
+            
+            <!-- Terminal Output Section -->
+            <div class="mb-4">
+                <label class="form-label form-label-cyber">Generated Password</label>
+                <div class="password-terminal">
+                    <div class="password-text-container">
+                        {% if password %}
+                            <span id="generated-password-text" class="text-cyber-green fw-bold fs-4">{{ password }}</span>
+                        {% else %}
+                            <span id="generated-password-text" class="text-muted fs-4">Click generate to start...</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if password %}
+                            <button class="btn btn-cyber-secondary btn-copy-pass btn-sm" data-target="generated-password-text" title="Copy to Clipboard">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Form -->
+            <form action="{{ url_for('generator') }}" method="POST">
+                <div class="card bg-dark bg-opacity-50 border border-secondary p-3 mb-4 rounded">
+                    <h5 class="text-white mb-3"><i class="fas fa-sliders text-cyber-neon me-2"></i>Generation Parameters</h5>
+                    
+                    <!-- Length Slider -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Password Length:</span>
+                            <span class="text-cyber-neon fw-bold"><span id="gen-length-label">{{ length }}</span> chars</span>
+                        </div>
+                        <input type="range" class="form-range form-range-cyber" id="gen-length-slider" name="length" min="8" max="64" value="{{ length }}">
+                    </div>
+                    
+                    <!-- Include Options -->
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="uppercase" name="uppercase" {% if use_upper %}checked{% endif %}>
+                                <label class="form-check-label text-white" for="uppercase">Include Uppercase Letters (A-Z)</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="lowercase" name="lowercase" {% if use_lower %}checked{% endif %}>
+                                <label class="form-check-label text-white" for="lowercase">Include Lowercase Letters (a-z)</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="digits" name="digits" {% if use_digits %}checked{% endif %}>
+                                <label class="form-check-label text-white" for="digits">Include Numbers (0-9)</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="symbols" name="symbols" {% if use_symbols %}checked{% endif %}>
+                                <label class="form-check-label text-white" for="symbols">Include Symbols (!@#$%^&*)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-cyber-primary w-100 py-3">
+                            <i class="fas fa-arrows-rotate me-2"></i> Generate Password
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        {% if password and session.get('user_id') %}
+                            <button type="button" class="btn btn-cyber-secondary w-100 py-3" data-bs-toggle="modal" data-bs-target="#savePasswordModal">
+                                <i class="fas fa-floppy-disk me-2"></i> Save to Encrypted Vault
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-cyber-secondary w-100 py-3" disabled title="Please generate password and log in to save.">
+                                <i class="fas fa-floppy-disk me-2"></i> Save to Vault
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if password and session.get('user_id') %}
+<!-- Save password modal -->
+<div class="modal fade" id="savePasswordModal" tabindex="-1" aria-labelledby="savePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border border-secondary shadow-lg">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="savePasswordModalLabel"><i class="fas fa-vault text-cyber-neon me-2"></i>Save Generated Password</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('vault') }}" method="POST">
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="password" value="{{ password }}">
+                
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label form-label-cyber">Service/Website Name</label>
+                        <input type="text" class="form-control form-control-cyber" id="title" name="title" placeholder="e.g. Google, Bank Account" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label form-label-cyber">Username / Email (Optional)</label>
+                        <input type="text" class="form-control form-control-cyber" id="username" name="username" placeholder="e.g. student@gmail.com">
+                    </div>
+                    
+                    <div class="p-3 bg-secondary bg-opacity-10 rounded border border-secondary mb-3">
+                        <small class="text-muted d-block mb-1">Encrypted Payload Preview:</small>
+                        <code class="text-cyber-green text-break">Symmetrically encrypted using AES-128 Fernet standard prior to database write.</code>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-cyber-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-cyber-primary">Confirm & Encrypt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

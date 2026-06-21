@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Offline Breach Checker – CyberGuard{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Search Checker form -->
+    <div class="col-lg-6">
+        <div class="card glass-card p-4 h-100">
+            <h2 class="text-white mb-3"><i class="fas fa-user-shield text-cyber-neon me-2"></i>Breach Checker</h2>
+            <p class="text-muted">Enter a password to check if it matches our offline list of the 1,000 most common passwords. This mimics credential stuffing lists used by threat actors.</p>
+            
+            <form action="{{ url_for('breach_checker') }}" method="POST" class="mb-4">
+                <div class="mb-3">
+                    <label for="breach-password-input" class="form-label form-label-cyber">Check Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control form-control-cyber" id="breach-password-input" name="password" value="{{ input_password }}" placeholder="Type password here..." required>
+                        <button class="btn btn-cyber-secondary btn-toggle-visibility" type="button" data-target="breach-password-input">
+                            <i class="fas fa-eye text-cyber-neon"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-cyber-primary">
+                        <i class="fas fa-search me-2"></i> Query Offline Leak Database
+                    </button>
+                </div>
+            </form>
+            
+            <div class="p-3 bg-dark bg-opacity-50 border border-secondary rounded">
+                <h5 class="text-white mb-2"><i class="fas fa-graduation-cap text-info me-2"></i>How does it work?</h5>
+                <small class="text-muted d-block mb-2">In a real breach checker (e.g. <i>HaveIBeenPwned</i>), you never send the plain text password to the server. Instead:</small>
+                <ol class="text-muted ps-3 mb-0" style="font-size: 0.85rem;">
+                    <li>The password is hashed using <b>SHA-1</b>.</li>
+                    <li>Only the first <b>5 characters</b> of the hash are sent to the server (using k-Anonymity).</li>
+                    <li>The server returns all matching hashes, and the client filters them locally.</li>
+                    <li>This offline app searches directly in our compiled database of common credentials to protect your network bandwidth.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Results column -->
+    <div class="col-lg-6">
+        <div class="card glass-card p-4 h-100 d-flex flex-column">
+            <h3 class="text-white mb-3"><i class="fas fa-square-poll-vertical text-cyber-neon me-2"></i>Leak Check Result</h3>
+            
+            {% if checked %}
+                <div class="p-3 rounded mb-4 text-center {% if is_breached %}bg-danger bg-opacity-10 border border-danger{% else %}bg-success bg-opacity-10 border border-success{% endif %}">
+                    {% if is_breached %}
+                        <i class="fas fa-circle-xmark text-cyber-red fa-3x mb-3"></i>
+                        <h4 class="text-white">BREACH DETECTED!</h4>
+                        <p class="text-cyber-red mb-0">This password matches one of the top 1,000 most common passwords list and is highly vulnerable to dictionary attacks.</p>
+                    {% else %}
+                        <i class="fas fa-circle-check text-cyber-green fa-3x mb-3"></i>
+                        <h4 class="text-white">NO OFFLINE LEAKS FOUND</h4>
+                        <p class="text-cyber-green mb-0">This password was not found in our database of the 1,000 most common passwords.</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Educational Hash Display -->
+                <div class="mb-4">
+                    <label class="form-label form-label-cyber">Computed SHA-1 Hash Value</label>
+                    <div class="p-3 bg-dark border border-secondary rounded">
+                        <code class="text-cyber-neon text-break fs-6 d-block text-center">{{ sha1_hash }}</code>
+                    </div>
+                    <small class="text-muted mt-1 d-block text-center">Hashing is a one-way mathematical function. It cannot be reversed to reveal your password.</small>
+                </div>
+                
+                <!-- Action Steps -->
+                <div class="mt-auto">
+                    <h5 class="text-white mb-2">Next Steps</h5>
+                    {% if is_breached %}
+                        <p class="text-muted small">Since this password is compromised, do not use it on any website. We recommend generating a cryptographically secure alternative immediately.</p>
+                        <a href="{{ url_for('generator') }}" class="btn btn-cyber-danger w-100">
+                            <i class="fas fa-key me-2"></i> Go to Password Generator
+                        </a>
+                    {% else %}
+                        <p class="text-muted small">Even though this password isn't in the common list, ensure it meets length and character complexity requirements before using it.</p>
+                        <a href="{{ url_for('analyzer') }}" class="btn btn-cyber-primary w-100">
+                            <i class="fas fa-gauge-high me-2"></i> Run Detailed Strength Audit
+                        </a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 py-5 text-center">
+                    <i class="fas fa-user-lock text-muted fa-4x mb-3 opacity-25"></i>
+                    <p class="text-muted">Initiate a breach search on the left to inspect matching statuses and trace secure SHA-1 cryptographic footprints.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
