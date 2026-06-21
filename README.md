@@ -1,37 +1,39 @@
-# CyberGuard – Password Security Toolkit
+# CyberGuard - Password Security Toolkit
 
-CyberGuard is a web-based application designed to help users evaluate password security, generate cryptographically secure passwords, and increase overall cybersecurity awareness. It helps users reduce the use of weak credentials and protect their digital assets.
+This is a Flask-based password security toolkit project. It is built as a student web application to demonstrate password strength analysis, password generation, offline breach checking, and password storage using local encryption.
 
----
+## Features
+- Register and Login
+- Dashboard showing total credentials, average strength, and activity log
+- Password Strength Analyzer (live checker and server-side analysis)
+- Custom Password Generator (choose length, numbers, letters, symbols)
+- Offline Password Breach Checker (checks against a dictionary list of 1,000 common passwords)
+- Credentials Vault (secure storage using AES Fernet encryption)
+- Activity Audit Log (tracks logins, additions, and deletions)
+- Report Export (download reports as PDF or CSV)
 
-## 🚀 Features
+## Installation & Setup
 
-- **User Authentication**: Secure Login & Registration system.
-- **Dashboard**: Centralized view of recent security scans, password strength statistics, and user activities.
-- **Password Strength Analyzer**: Real-time evaluation of password complexity and vulnerabilities.
-- **Strong Password Generator**: Customizable creation of secure, random passwords.
-- **Offline Password Breach Checker**: Safe check against common weak or compromised passwords.
-- **Password History**: Track previously generated/tested patterns (with privacy and security in mind).
-- **Security Tips & Guidelines**: Educational content to improve password security practices.
-- **User Profile & Activity Log**: Manage profile details and track user sessions/actions.
-- **Export Scan Report**: Download comprehensive security reports in PDF format.
+1. Create a Python virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
----
+2. Install the required python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## 🛠️ Technology Stack
+3. Run the Flask application:
+   ```bash
+   python app.py
+   ```
+   Open your browser and visit: `http://127.0.0.1:5000`
 
-- **Backend**: Python, Flask, Jinja2
-- **Database**: SQLite
-- **Frontend**: HTML5, CSS3, Bootstrap 5
-- **Development Tools**: Ubuntu Linux, VS Code, Google Chrome, SQLite Browser
-
----
-
-## 📁 Directory Structure
-
-```text
-cyberguard-password-toolkit/
-├── app/          # Flask Application Source Code
-├── docs/         # Documentation & Week Reports
-└── screenshots/  # Project Screenshots
-```
+## Project Structure
+- `app.py`: Main Flask application containing all routes, db models, and security logic.
+- `requirements.txt`: Python package dependencies.
+- `static/`: Frontend assets (custom CSS, JavaScript logic, and common passwords dictionary list).
+- `templates/`: Jinja2 HTML templates for each page.
+- `docs/`: Weekly project reports.
